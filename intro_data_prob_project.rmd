@@ -1,0 +1,126 @@
+---
+title: "Health analysis project by Ognish Banerjee"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+### Foreword
+
+Data is now becoming the epicenter of businesses to arrive at critical decisions, as many of us would come across the quote "data is the new oil", I am also using this data to fuel our decision making capabilities through this capstone project titled 'Health analysis' for identifying for identiying the condition of individual's health across US'. In this study I attempt to analyze the health datas like health status, health care access, chronic health conditions, Demographics, Income level etc. and arrive at a dashboard visualization to mark these datas are plausible parameters in determing health conditions.
+
+### Scope Of The Project
+
+I am a part time social worker and my analytics intends to create health intelligence dashboards targeted towards key requirements in the health sector based on its strong understanding of health status, health care access, Income level, marital status etc. So that  we could be aware of these parameters in context to the health sector.
+
+
+### Assignment includes
+
+1) Study, analyze and derive insights from the data shared by 'The Behavioral Risk Factor surveillance System (BRFSS 2013) analytics.
+
+2) As part of deliverables we
+
+  a)Identify significant variables which have influence on the decision making in
+    personal health.
+  
+  b)Summarizing the health potential for such solution to the health sector.  
+
+### Approach:
+
+There is a single phase in this project
+
+Based on the data provided by (BRFSS), i tried to identify the variables which are much significant for this study.The output of this phase is to perform an exploratory analysis and to create an indicative dashboard solution.
+  
+  
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+### Load data
+
+
+
+```{r load-data}
+load("brfss2013.RData")
+```
+
+
+
+* * *
+
+## Part 1: Data
+Data gathered by (BRFSS) contains details of health parameters that are used in the analysis
+ 
+ 1) For Question 1, 'General Health', 'Health Coverage','Medical cost' datas are used to show there dependence on cancer of an individual.
+ 
+ 2) For Question 2, 'Income level' and 'Maritul Status' data are used to draw concnlusion that these parameters ae responsible for tobacco smoking across US
+ 
+ 3) For Question 3, individual's 'stength' and 'fresh fuit juice consumpton' data are used to conclude their relevance in determing the possibilty of that individual getting infected by flu
+  
+* * *
+
+## Part 2: Research questions
+
+**Research quesion 1:**
+To check people who neither has any health coverages nor financial enough strong to consult a doctor, had any type of cancer, having fair general health.
+
+**Research quesion 2:**
+The distribution showing people smoked atleast 100 cigarettes, according to their income level and marital status.
+
+**Research quesion 3:**
+A distribution showing adults, who are affected by flu / spar for past 12 months. grouping them according to strength and how many times do they drink fresh fruit juice
+
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+1) In the fist distribution we found that there is a significant relationship between cancer and general health. An individual having a fairly good health did not have any type cancer 
+2) The following disrtribution presents the number of smoker with their income level and maritul status the plot shows that those having high income group and are divorced smokesd 100 cigarrates much more
+3) The last plot establishes a relationship of people who consumes fresh fruit juce get affected by a flu. The distribution shows that people who did not comsume fresh fruit juice were more infected by a flue
+**Research quesion 1:**
+
+```{r}
+cancer_effect <- brfss2013 %>% 
+  group_by(genhlth=='Fair') %>%
+ filter(hlthpln1=='No', medcost=='Yes')
+my_mutate <- cancer_effect %>% mutate(chcocncr = ifelse(chcocncr=='Yes', "Has cancer", "Dont have cancer"))
+#cancer_effect
+ggplot(data = cancer_effect, aes(x=chcocncr)) + geom_histogram(stat = "count")
+```
+
+```{r}
+```
+
+
+
+**Research quesion 2:**
+
+```{r}
+smoker_check <-brfss2013 %>% 
+  group_by(income2=='$75,000 or more') %>% 
+filter (marital=='Divorced')
+sm_mutate <- smoker_check %>% mutate(smoke100 = ifelse(smoke100=='Yes',"regelar smoker", "not regular"))
+ggplot(data = smoker_check, aes(x=smoke100)) + geom_bar(stat = "count")
+```
+
+
+
+**Research quesion 3:**
+
+```{r}
+flu_infection <- brfss2013 %>% group_by(strength>100) %>% filter(fruit1 > 200)
+flu_mutate <- flu_infection %>% mutate(flushot6 = ifelse(flushot6=='Yes', "infected", "not infected"))
+ggplot(data = flu_infection, aes(x=flushot6)) + geom_bar(stat = "count")
+```
+
+
+### Inference
+
+1) From the first analysis, we can infer that an individual who does not have a health coverage, and financialy weak has suffered in any form of cancer in their life
+
+2) From Second, we conclude that person in the upper income level and are divorced smoked cigarretes more than the average income level of the society
+
+3) Lastly I want to show that an individual who consumes fresh fruit juice are unlikely to get infected by any kind of flu.

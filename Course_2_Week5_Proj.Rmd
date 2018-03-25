@@ -1,0 +1,276 @@
+---
+title: "Data analysis with the GSS data"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(dplyr)
+library(statsr)
+library(ggplot2)
+library(psych)
+```
+
+### Load data
+
+
+```{r load-data}
+load("gss.Rdata")
+attach(gss)
+```
+
+
+
+* * *
+
+## Part 1: Data
+
+The data was collected of 57061 randomly sampled individuals by GSS from various status, cultures to monitor and explain trends and constants in attitudes, behaviours and attributes.
+
+
+# Generalizabilty:
+
+Population of interest are the various individual data collected by the General Social Survey on contemporary American Society thriugh (1972-2012). The analysis can be fenralized to the population as it is an OBSERVATIONAL study using RANDOM SAMPLING.
+
+
+# Causality:
+
+As INDIVIDUALS are just  observational studies, there are no causation that can be established for any pair of variables. THERE IS NO RANDOM ASSIGNMENT.
+
+The GSS contains a standard core of demographic, behavioral, and attitudinal questions, plus topics of special interest. Among the topics covered are civil liberties, crime and violence, intergroup tolerance, morality, national spending priorities, psychological well-being, social mobility, and stress and traumatic events.
+
+
+* * *
+
+## Part 2: Research question
+
+We all somewhat think that money is very important for our day to day living. It is, I'm not denying that. With money we can have any tangible things present around us. We can have a good standard of living, give our children good education, be finacially very secured during old age and many more. In today's world money has become one of the most basic necessity for survival. BUT do money has all the positive effects on our lives? I DOUBT.
+
+This has lead me to think what are the effects that actually bring to individuals with their sociio-ecomic status. And i tried to develop four research questions on the basis of it. Let's see if i can come to conclusion on the basis of these questions.
+
+
+# Question 1:
+
+My first doubt arises on the amount of fear we individualshave in ourselves. Does it somewhow relates to our social status, doesmoney brings the sense of fearlessness in our attitude?
+
+
+# Question 2:
+
+The number of suicide that we come across almost everyday. Do the rich people commits more suicide compared to others?
+
+# Question 3:
+
+Do females from the upper section of the society goes through abortion at a much greater rate than others?
+
+# Question 4:
+
+The amount of drugs that individuals deal with. Is it very popular among the rich class?
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+
+```{r}
+summary(sei)
+```
+
+# Conclusion:
+
+The above result is the summary statistics of the variable (sei) which represents the socio economic status of an individual in the GSS data.
+
+
+
+```{r}
+par(mfrow=c(1,2))
+boxplot(sei~fear, main="Socio_Stat VS Individual_Fear", col=c(2,3), ylim=c(10,100), las=1)
+boxplot(sei~suicide4, main="Socio_Stat VS Amount_Suicide", col=c(4,5),ylim=c(10,100),las=1)
+```
+
+
+```{r}
+par(mfrow=c(1,2))
+boxplot(sei~abnomore, main="Socio_Stat VS Abortion_Rate", col=c(6,7),ylim=c(10,100),las=1)
+boxplot(sei~natdrug, main="Socio_Stat VS Drug_Culture", col=c(13,14,2),ylim=c(10,100),las=1)
+```
+
+# Conclusion:
+
+PLOT 1:
+
+Our visual inspection shows that there is not much diffrenece in the amount of fear amongst individual with the social status. But we can't say anything right now, as this is just an observational study. In box plot we see the median values. We have to deal with mean values later.
+
+PLOT 2:
+
+It can be seen from the above plot that the number of suicides is way more common in people who are from a rich section of the society than the normal mass.
+
+PLOT 3:
+
+The amount of abortion is also very high amongst the rich. But we cannot say anything right now. 
+
+PLOT 4:
+
+The last plot shows that common peoplr deal with drugs much less than the people who are in the upper ection of the society.
+
+Now that we have got the median values of all these variables. Let us see  the mean of these parameters as well.
+
+
+
+# Summary Statistics:
+
+
+```{r}
+describeBy(sei,fear, mat = TRUE)
+```
+
+# Conclusion:
+
+The above summary statistics shows that there is a differnce of mean in fear among individuals with their socio-economic background. We can see from the above result that people who are economically stronger have less fear (47.01499) compared to those who are not as wealthy as them (49.08846). The question that arises in my mind is that if this difference is STATISTICALY SIGNIFICANT OR NOT. Forthe we have to build a hypothesis,which is discussed later. 
+
+
+
+```{r}
+describeBy(sei,abnomore, mat=TRUE)
+```
+
+
+# Conlcusion:
+
+From the above statistical summary. A strange behaviour amongst individual can be seen. Based on the mean value, I may say that rich people in general are reluctant to have babies (51.52152) than people who are less economically strong (45.74). Again i cannot base my judgemnet on anything right now.Let's see this is also a Staatistically significant or not.
+
+
+
+```{r}
+describeBy(sei,suicide4, mat = TRUE)
+```
+
+# Conclusion:
+
+This is Shocking. I never expected this. The result above shows that wealthy people more likely to commit suicide(52.63493). This is getting interesting a lot.
+
+
+
+```{r}
+describeBy(sei,natdrug, mat = TRUE)
+```
+
+# Conclusion:
+
+The summary statistics shows there a considerable difference in the amount of drug consumption amongs people with theor different socio economic status. We have to see whether these diffrences are statisticaly significant or not. 
+
+* * *
+
+
+## Part 4: Inference
+
+
+#Hypothesis:
+
+H0 = The null hypothesis states that the there is no statistical diffrence difference amount of fear with       their social economic status and it is just an a randomly observed value.
+
+Ha = The alternative hypothesis states that there is indeed a significant diffrence between the two values      and the null hypothesis is wrong.
+
+
+
+```{r}
+# A two sided alternative hypothesis is shown.
+inference(y = sei, x = fear, data = gss, statistic = "mean", type = "ht", null = 0, alternative = "twosided", method = "theoretical")
+```
+
+## Conclusion/Inference:
+
+The probality values (0.0001) confirms that there is statistical differece in the amount of fear amongst individuals accoring to their socio economic status. and the P-value < 0.05. Therefore we rejecting the null hypothesis (H0). 
+
+
+
+## Interpretation:
+
+From the above result we can see that rich people are infact much fearless compared to the others. This attitude in them might be beacause they think they have enough money and they belong to the upper section of the society, so why will they at all fear anybody. Many of them might be having power, backings and many other
+
+
+
+#Hypothesis:
+
+H0 : Null Hypothesis suggests that difference in the amount of suicide amongs individuals according to          their ecomic backgrounnd is not statistically significant and is just a observed value.
+
+Ha : The alternative hypothesis says that the diffrenece is statistically significant and rich people in        general commits suicide more than the poor.
+
+
+
+```{r}
+# A two sided alternative hypothesis is shown.
+inference(y = sei, x = suicide4, data = gss, statistic = "mean", type = "ht", null = 0, 
+          alternative = "twosided", method = "theoretical")
+```
+
+
+## Conclusion/Inference:
+
+The above hypothesis test shows us that in general rich people commits more suicide than the poor. The P-value is < 0.0001 and therefore we reject the null hypothesis.
+
+
+
+## Interpretation:
+
+This might be because these people might be having intense job / family pressure. To earn more, you have to work very hard or else no one will pay you high, and for these reason i think, many of them can't cope with this , their work-life balance is destroyed and which leads them to commit suicide.
+
+
+
+#Hypothesis:
+
+H0 : The null hypothesis says that there is no differnece in the amount of abortion with socio economic        status.
+
+Ha : The alternative hypothesis states that there is an indeed diffrenece between the two values.
+
+
+
+```{r}
+# A two sided alternative hypothesis is shown.
+inference(y = sei, x = abnomore, data = gss, statistic = "mean", type = "ht", null = 0, 
+          alternative = "twosided", method = "theoretical")
+```
+
+
+
+## Conclusion/Inference:
+
+After conducting the test. I have come to the conclusion that the diffrence in the amount of abortions amongnst females with socio ecomic backgrounds is statistically significant. P-value < 0.05 forced me to reject the null hypotheis and accept the alternative hypothesis. 
+
+
+
+## Interpretation:
+
+Interpretation of this result is a bit difficult. My views might contradict with others. But still, perhaps these people are very much casual about sex. Many a times they go through intercourse without proper protection as such and they end up getting concieved accidently, and therefore the abortion rate is high among them.
+
+
+
+#Hypothesis:
+
+H0 : The amount of consumption of drug amongs individual is not at all dependent on their economic              background.
+
+Ha : As this is a categorical variable with three levels. An alternative hypotheis is created where at          least one of the values should be differenet from one of them to get in to a concusion.
+
+
+
+```{r}
+summary(aov(sei~natdrug))
+```
+
+
+## Conclusion/Inference:
+
+The above summary shows that there is atleast one of the values is diffrent from each other and is statistically significant with P-value (2e-16) << 0.05 . Therefore rejecting the null hypothesis and accepting the alternative hypothesis. Hence there is a diffrenence in the amount of drug consumption amongts individual according to their social background.
+
+
+
+## Interpretation:
+
+First of all drugs are costly. Atleast some of them, and common people don't have that much of extra money to spend it on these. So that might be the reason why they get indulge in these activities very less.
+

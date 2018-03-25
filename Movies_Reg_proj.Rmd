@@ -1,0 +1,344 @@
+---
+title: "Modeling and prediction for movies"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+library(statsr)
+library(GGally)
+```
+
+### Load data
+
+Loading Data
+
+```{r load-data}
+load("movies.Rdata")
+```
+
+* * *
+
+## Part 1: Data
+The data was collected of 651 randomly sampled movies released 2016.
+
+#Generalizability: 
+
+Population of interest are the various IMDB Rating assigned to the different movies of 2016.The analysis can be generalized to the population as it is an observational study using RANDOM SAMPLING
+
+#Causality: 
+
+As MOVIES is just an observational study, there is no causation that can be established for any pair of variables. THERE IS NO RANDOM ASSIGNMENT
+
+* * *
+
+# Test Of Randomness:
+Test (best pic win Vs imdb rating).
+
+A plot is created to check the the pattern of movies winning oscars as per with IMDB rating.
+
+```{r}
+attach(movies)
+ggplot(data = movies, aes(x= best_pic_win, y= imdb_rating))+
+  geom_point() +
+  stat_smooth(method = "lm", se= FALSE)
+```
+
+
+#Result : 
+
+The plot shows that inspite of many movies that are rated high, did not win oscar. It shows that only 4 movies that won Oscar that are rated high, which stengthen the fact that the data was collected RANDOMLY.
+
+
+* * *
+
+## Part 2: Research question
+
+THE Research question that are phrased below are all in a NON-CAUSAL way.
+
+After going through the data deeply that was provided. I thought that IMDB Rating might be the variable that can decide the popularity of a movie and that picked my interest. So, I started  searching for variables that might contribute to its behaviour. And, therefore i came up with variables like "Aundience score", "Critics score", "Imdb number of votes", "Audience Rating", "Movie runtime", and "Genre".  
+
+#Research Question 1 : 
+
+An attempt made to establish a causable relationship with                                the various IMDB rating assigned to movies depens on                                     Critics and Audience Score
+
+#Research Question 2 : 
+
+Do Audinece Rating and Movie runtime is related to general rating                        of a movie?
+
+#Research Question 3 : 
+
+Is Genre a factor in rating of a movie
+
+#Research Question 4 : 
+
+Do number of IMDB Votes depends on its rating of a movie?
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+* * *
+
+# Research Question 1
+ 
+The corelation coefficient and the plot shows the general distribution of IMDB Rating with audience and critics score.
+```{r}
+cor(imdb_rating,critics_score+audience_score)
+```
+
+
+#Conclusion: 
+
+As expected, the High Correltaion coefficient shows that a linear possitive association is there among the variables as discussed.
+
+```{r}
+   ggplot(data = movies, aes(x=critics_score+audience_score, y=imdb_rating)) +
+   geom_point() +
+   stat_smooth(method = "lm", se=FALSE)
+```
+
+
+#Conclusion : 
+
+The Scatter Plot with the least square line shows a linear association bewteen the variables. High critics and audience score suggest high rating by IMDB.
+
+```{r}
+#Checking the diagonstic plot
+ c1 <- lm(imdb_rating~audience_score+critics_score, data = movies)
+par(mfrow=c(2,2))
+plot(c1)
+```
+
+
+#Conclusion : 
+
+The residuals are nearly normal and are independent.
+ 
+
+```{r}
+summary(c1)
+#Summary Statistics of the model
+```
+
+
+#Conclusion : 
+
+The summary statistics shows that the explanatory variabls : audience sccore and critics score  are significant factor of this model that has slopes of 0.0347 and 0.011 respectively. The high adjusted R square (0.795) also shows that 79.56% of variabilty of IMDB rating can be explained by the stated variables Also, for each predictor 2 tailed p value i.e Pr(>|t|) is significant, therefore used as a predictor in the model. Also, model as a whole is signicant given by F-statistic below: F-statistic: 1288 on 2 and 648 DF, p-value: < 2.2e-16.
+
+
+#Result: 
+
+The diffrent plots and the summary statistics clearly address the research question that I tried to constuct.
+
+* * *
+
+## Research Question 2: 
+
+The Plot shows the distribution of IMDB Rating with audience rating and movie runtime.
+
+```{r}
+boxplot(imdb_rating~audience_rating, main="Aundience Rating VS IMDB Rating", xlab="Audience Rating", ylab="IMDB Rating", las=1, col=c(4,2))
+```
+
+
+#Conclusion : 
+
+The box plot shows that that audience rated "Upright" has a higher median (nearly 7) than IMDB rating than those who rated "Spilled" (nearly 5.8).
+
+```{r}
+#TO check relation between Runtime and IMDB Rating
+Runtime_Group <- cut(runtime, breaks = c(50, 100, 150, 200), levels=c("50/100", "100/150","150/200" ))
+Runtime_Group[1:5]
+
+```
+
+The various groups of movie runtime is created for simpler visualisation.
+
+
+```{r}
+boxplot(imdb_rating~Runtime_Group, main="IMDB Rating VS Runtime", xlab="Runtime Group (min)", ylab="IMDB Rating", las=1, col=c(3,4,2))
+```
+
+
+#Conclusion : 
+
+The plot shows that movies that has runtime ranging from 150 to 200 min has a higher median of IMDB rating compared to others.
+
+#Result : 
+
+The above box plots are attempt to address my second question that Imdb rating has a relationship with audience rating and movie runtime.
+
+* * *
+
+## Research Question 3: 
+
+The plot shows the distribution of movie genre with IMDB rating.
+
+```{r}
+boxplot(imdb_rating~genre, data = movies, main="Movie Genre VS IMDB Rating", xlab="Genre category", ylab="IMDB Rating", col=c(2,3))
+```
+
+
+#Conclusion : 
+
+The Box plot Shows that movie genre has a relation with Imdb rating.
+
+#Result : 
+
+The above plot was an atempt to addresses my third question. 
+
+* * *
+
+## Research Question 4 : 
+
+The linear model and the residual shows the distribution of IMDB rating with its number of votes
+```{r}
+#TO check association between IMDB Rating and IMDB number votes
+n1 <- lm(imdb_rating~imdb_num_votes, data = movies)
+# n1 is a variable to get the correct linear model
+    ggplot(data = movies, aes(x=imdb_num_votes, y=imdb_rating), main="IMDB number of votes     VS IMDB RATING") +
+    geom_point() +
+    stat_smooth(method = "lm", se=FALSE)
+```
+
+
+#Conclusion : 
+
+The scatter plot with the least square line shows the strong linear association between the rating and the number of votes.
+
+
+```{r}
+#Checking the diagnostic plot
+par(mfrow=c(2,2))
+plot(n1)
+```
+
+
+#Conclusion : 
+
+The Residual plot is fairly normal and independent.
+
+```{r}
+summary(n1)
+# Summary Statistics of the model
+```
+
+
+#Conclusion : 
+
+The summary statistics shows that the explanatory variabl : IMDB number of votes that has a very less p-value shows that it is a significant factor of the model, with 2.2e-16.
+
+#Result: 
+
+The above plots tried best to address my fourth and final research question.
+
+* * *
+
+## Part 4: Modeling
+
+Now. I  tried to build a final model, with all the variables that are being discussed so that I can show that these are indeed the explanatory variables of my prediction. The variables are "Aundience score", "Critics score", "Audience Rating", "Movie runtime", "IMDB number of votes" and "Genre". The reason that  other variables are excluded from this model because they are not a strong significant explanatory factors and showed much higher p-value and a lesser adjusted R square.
+
+```{r}
+#The Final Model
+final_mod <- lm(imdb_rating~audience_score + genre + audience_rating + critics_score + runtime + imdb_num_votes, data = movies)
+#Getting the summary
+summary(final_mod)
+
+```
+```{r}
+#The Diagnostic plot of the full model
+par(mfrow=c(2,2))
+plot(final_mod)
+```
+
+
+#Conclusion :
+
+A)The Diagnostic  : Above plots nearly met the condition of constant variabality, residuals are independent observations and residuals are nearly normal.
+
+B)Interpretation of coefficients :
+
+1)It can be concluded with the high adjusted R square (0.828), that 82.8% variability of IMDB rating can be explained with the variables.
+
+2) The Y-intercept (3.060e+00) can be interpreted as the value we would predict for Y (IMDB Rating) if all other explanatory variable are zero (X1=X2=.....=Xn=0). Which is here in this case is not very important.
+
+3) Coefficient of continuous predictor variables like for audiece score(X1) and critics score(X2) 4.059e-02 (b1),9.994e-03 (b2) respectivel, means that if if X1 differed by one unit (keeping X2 constant) Y will differ by b1 units, on average.
+
+4) Coefficients of categorical variables like audience rating. Since it is categorical having two levels 0 (refernce point)  or 1, a one unit difference represent switching from one category to . So we would expect audience rating spilled as reference having 0 level.
+
+* * *
+
+## Part 5: Prediction
+
+Note that we have deduced our final model. Now, We will take 2 movies from 2 different genres and observe how much they vary according to different explanatory valeus.
+
+#Movie 1: FILLY BOWN
+
+ Rotten Tomato link: //www.rottentomatoes.com/m/filly_brown_2012/.
+ IMDB link:http://www.imdb.com/title/tt1869425/.
+ Runtime: 80 min.
+ Genre: Drama.
+ Imdb num votes: 899.
+ Critics_score: 45.
+ Audience_rating: Upright.
+ Audience_score: 73.
+ Actual IMDB Rating: 5.5.
+ Predicted IMDB rating: 6.5.
+
+
+```{r}
+mov_1 <- data.frame(runtime=80, genre= "Drama", imdb_num_votes=899, critics_score=45, audience_score=73, audience_rating="Upright")
+predict(final_mod,mov_1)
+```
+ 
+ 
+```{r}
+predict(final_mod, mov_1, interval="predict", level = 0.95)
+```
+
+
+#Conclusion:
+
+The model seems to have done well in order to predict the IMDB rating for the movie with predicted rating as 6.5 while actual is 5.5.
+The 95% confidence interval is between 5.69 and 7.40.
+
+#Movie 2: THE DISH
+
+ Rotten Tomato link: //www.rottentomatoes.com/m/dish/.
+ IMDB link:http: http://www.imdb.com/title/tt0205873/.
+ Runtime: 101 min.
+ Genre: Drama.
+ Imdb num votes: 12285.
+ Critics_score: 96.
+ Audience_rating: Upright.
+ Audience_score: 81.
+ Actual IMDB Rating: 7.3.
+ Predicted IMDB rating: 7.4.
+
+```{r}
+mov_2 <- data.frame(runtime=101, genre= "Drama", imdb_num_votes=12285, critics_score=96, audience_score=81, audience_rating="Upright")
+predict(final_mod,mov_2)
+```
+
+```{r}
+predict(final_mod, mov_2, interval="predict", level = 0.95)
+```
+
+The model seems to have done fantastic this time. Predicted rating as 7.4 while actual is 7.3. A diffrence of 0.1.
+The 95% confidence interval is between 6.55 and 8.328.
+
+* * *
+
+## Part 6: Conclusion
+ 
+This regressive analysis is an attempt to give it the best fit that is to generate a parsimonious model. Although there may be a scope to generate a better model of greater prediction with as few predictor variables as possible.

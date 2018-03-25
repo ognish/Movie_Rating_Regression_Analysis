@@ -1,0 +1,84 @@
+---
+title: "Exploring the BRFSS data"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+### Load data
+
+Make sure your data and R Markdown files are in the same directory. When loaded
+your data file will be called `brfss2013`. Delete this note when before you submit 
+your work. 
+
+```{r load-data}
+load("brfss2013.RData")
+attach(brfss2013)
+```
+
+
+
+* * *
+
+## Part 1: Data
+
+
+* * *
+
+## Part 2: Research questions
+
+**Research quesion 1:**
+To plot the number of people who does not have any health coverage plan and could not consult a doctor due to financial isuues, are suffereing from any type of cancer.
+
+**Research quesion 2:**
+
+**Research quesion 3:**
+
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
+button (green button with orange arrow) above. Make sure that your code is visible
+in the project you submit. Delete this note when before you submit your work.
+
+**Research quesion 1:**
+
+```{r to find cancer patients}
+no_cancer_pateint <- brfss2013 %>%
+  group_by(genhlth)%>%
+  filter(hlthpln1 == "No", medcost == "Yes")
++ mutate(chcocncr = ifelse(chcocncr == "Yes", "Has cancer", "Dont have cancer"))
+ggplot(data = cancer_pateint, aes(x= chcocncr))
++ geom_histogram()
+  
+```
+
+
+
+**Research quesion 2:**
+
+```{r}
+
+```
+
+
+
+**Research quesion 3:**
+
+```{r}
+
+```
+
